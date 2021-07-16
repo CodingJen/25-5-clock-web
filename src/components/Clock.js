@@ -28,7 +28,7 @@ class Clock extends React.Component {
   setSession(e) {
     if (!this.state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
-    let newLength = this.state.sessionLength += changeAmount;
+    let newLength = this.state.sessionLength + changeAmount;
     
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
@@ -42,7 +42,7 @@ class Clock extends React.Component {
   setBreak(e) {
     if (!this.state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
-    let newLength = (this.state.breakLength += changeAmount);
+    let newLength = this.state.breakLength + changeAmount;
     
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
