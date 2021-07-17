@@ -23,6 +23,27 @@ class Clock extends React.Component {
     this.handleReset = this.handleReset.bind(this);
     this.handleStartStop = this.handleStartStop.bind(this);
     this.playSound = this.playSound.bind(this);
+    this.updateLocalStorage = this.updateLocalStorage.bind(this);
+
+    this.localStore = {};
+  }
+
+  componentDidMount() {
+      this.localStore = JSON.parse(localStorage.getItem('clockData')) || {};
+      const sessionLength = parseInt(this.localStore.sessionLength) || 25;
+      const breakLength = parseInt(this.localStore.breakLength) || 5;
+      const timeRemaining = minsToMilli(sessionLength);
+
+    this.setState({
+      sessionLength,
+      breakLength,
+      timeRemaining,
+    })
+  }
+
+  updateLocalStorage(tag, value) {
+    this.localStore[tag] = value;
+    localStorage.setItem('clockData', JSON.stringify(this.localStore));
   }
 
   setSession(e) {
@@ -34,6 +55,8 @@ class Clock extends React.Component {
     if (newLength > 60) newLength = 60;
     
     this.setState({sessionLength: newLength});
+
+    this.updateLocalStorage('sessionLength', newLength);
 
     if (!this.state.break)
       this.setState({ timeRemaining: minsToMilli(newLength) });
@@ -48,6 +71,7 @@ class Clock extends React.Component {
     if (newLength > 60) newLength = 60;
 
     this.setState({ breakLength: newLength });
+    this.updateLocalStorage('breakLength', newLength);
 
     if (this.state.break)
       this.setState({ timeRemaining: minsToMilli(newLength) });
@@ -106,6 +130,8 @@ class Clock extends React.Component {
       timeRemaining: 25 * 60 * 1000,
       intervalTimer: null,
     }));
+    this.updateLocalStorage('breakLength', 5)
+    this.updateLocalStorage('sessionLength', 25)
   }
 
   handleStartStop() {
