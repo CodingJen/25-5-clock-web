@@ -146,33 +146,32 @@ main {
   font-size: 3rem;
   display:  -ms-grid;
   display:  grid;
+  grid-template-rows: 1fr 1fr;
   gap: 1rem;
       grid-template-areas:
-    "break-label break-setting break-up break-down"
-    "session-label session-setting session-up session-down"
+    "break-label   break-setting   break-up   break-down volume"
+    "session-label session-setting session-up session-down volume"
 }
 
+
+
 #break-label {
-  -ms-grid-row: 1;
-  -ms-grid-column: 1;
   grid-area: break-label;
   -ms-grid-column-align: end;
       justify-self: end;
 }
-#break-setting {-ms-grid-row: 1;-ms-grid-column: 3;grid-area: break-setting;}
-#break-up {-ms-grid-row: 1;-ms-grid-column: 5;grid-area: break-up;}
-#break-down {-ms-grid-row: 1;-ms-grid-column: 7;grid-area: break-down;}
+#break-setting {grid-area: break-setting;}
+#break-up {grid-area: break-up;}
+#break-down {grid-area: break-down;}
 #session-label {
-  -ms-grid-row: 3;
-  -ms-grid-column: 1;
   grid-area: session-label;
   -ms-grid-column-align: end;
       justify-self: end;
 }
-#session-setting {-ms-grid-row: 3;-ms-grid-column: 3;grid-area: session-setting;}
-#session-up {-ms-grid-row: 3;-ms-grid-column: 5;grid-area: session-up;}
-#session-down {-ms-grid-row: 3;-ms-grid-column: 7;grid-area: session-down;}
-
+#session-setting {grid-area: session-setting;}
+#session-up {grid-area: session-up;}
+#session-down {grid-area: session-down;}
+.volume-control { grid-area: volume;}
 
 .selector {
   font-size: 5rem;
@@ -185,6 +184,11 @@ main {
 /*   padding: 1rem; */
 /*   text-align: center; */
 }
+.selector-num {
+  text-align: right;
+  min-width: 4rem;
+}
+
 
 .arrow {
   cursor: pointer;
@@ -302,3 +306,119 @@ main {
   -webkit-box-shadow: inset 0px 0px 3px 2px rgba(255,255,255,0.3);
           box-shadow: inset 0px 0px 3px 2px rgba(255,255,255,0.3);
 }
+
+.volume-control {
+  
+}
+
+/* https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/ */
+input[type=range] {
+  transform: rotate(-90deg); 
+  -webkit-appearance: none; /* Blank Slate Style */
+  width: 10rem; /* Blank Slate Style */
+  /* height: 100%; */
+  background: transparent; /* Blank Slate Style */
+}
+
+input[type=range]::-ms-track {
+  width: 100%; /* Blank Slate Style */
+  cursor: pointer; /* Blank Slate Style */
+  background: transparent; /* Blank Slate Style */
+  border-color: transparent; /* Blank Slate Style */
+  color: transparent; /* Blank Slate Style */
+}
+
+input[type=range]:focus {
+  outline: none; /* Blank Slate Style */
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Blank Slate Style */
+  border: 1px solid dimgray;
+  height: 36px;
+  width: 16px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,#101010 0%, #101010 45%, #cccccc 45%, #cccccc 55%, #101010 55%, #101010 100%);
+  cursor: pointer;
+  margin-top: -14px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+}
+
+input[type=range]::-moz-range-thumb {
+  border: 1px solid dimgray;
+  height: 36px;
+  width: 16px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,#101010 0%, #101010 45%, #cccccc 45%, #cccccc 55%, #101010 55%, #101010 100%);
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+}
+
+input[type=range]::-ms-thumb {
+  border: 1px solid dimgray;
+  height: 36px;
+  width: 16px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,#101010 0%, #101010 45%, #cccccc 45%, #cccccc 55%, #101010 55%, #101010 100%);
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+}
+
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #367ebd;
+}
+
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border: 0.2px solid #010101;
+}
+
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 8.4px;
+  cursor: pointer;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+  background: #3071a9;
+  border-radius: 1.3px;
+  border-width: 16px 0;
+  color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+  background: #2a6495;
+  border: 0.2px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+  background: #3071a9;
+}
+
+input[type=range]::-ms-fill-upper {
+  background: #3071a9;
+  border: 0.2px solid #010101;
+  border-radius: 2.6px;
+  box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+  background: #367ebd;
+}
+

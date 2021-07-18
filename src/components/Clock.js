@@ -3,6 +3,7 @@ import React from "react";
 import Controls from "./Controls";
 import TimerDisplay from "./TimerDisplay";
 import TimeControl from "./TimeControl";
+import VolumeControl from "./VolumeControl/VolumeControl";
 import { minsToMilli } from "../utils";
 
 class Clock extends React.Component {
@@ -16,6 +17,7 @@ class Clock extends React.Component {
       runningInterval: null,
       lastTime: null,
       break: false,
+      volume: 1,
     };
     this.setSession = this.setSession.bind(this);
     this.setBreak = this.setBreak.bind(this);
@@ -23,6 +25,7 @@ class Clock extends React.Component {
     this.handleReset = this.handleReset.bind(this);
     this.handleStartStop = this.handleStartStop.bind(this);
     this.playSound = this.playSound.bind(this);
+    this.handleVolume = this.handleVolume.bind(this);
     this.updateLocalStorage = this.updateLocalStorage.bind(this);
 
     this.localStore = {};
@@ -33,11 +36,13 @@ class Clock extends React.Component {
       const sessionLength = parseInt(this.localStore.sessionLength) || 25;
       const breakLength = parseInt(this.localStore.breakLength) || 5;
       const timeRemaining = minsToMilli(sessionLength);
+      const volume = parseFloat(this.localStore.volume) || 1;
 
     this.setState({
       sessionLength,
       breakLength,
       timeRemaining,
+      volume,
     })
   }
 
@@ -117,6 +122,14 @@ class Clock extends React.Component {
     soundClip.play();
   }
 
+  handleVolume(e) {
+    const soundClip = document.getElementById("beep");
+    const volume = parseFloat(e.target.value);
+    soundClip.volume = volume;
+    this.setState({volume})
+    this.updateLocalStorage('volume', volume);
+  }
+
   handleReset() {
     if (!this.state.paused) clearTimeout(this.state.runningInterval);
     const soundClip = document.getElementById("beep");
@@ -180,6 +193,9 @@ class Clock extends React.Component {
                 downId="session-decrement"
                 onClick={this.setSession}
               />
+              <VolumeControl
+                onChange={this.handleVolume}
+                value={this.state.volume} />
             </div>
 
             <Controls
