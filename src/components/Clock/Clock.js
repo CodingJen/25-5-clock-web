@@ -1,10 +1,10 @@
 import React from "react";
 
-import Controls from "./Controls";
-import TimerDisplay from "./TimerDisplay";
-import TimeControl from "./TimeControl";
-import VolumeControl from "./VolumeControl/VolumeControl";
-import { minsToMilli } from "../utils";
+import Controls from "../Controls/Controls";
+import TimerDisplay from "../TimerDisplay";
+import TimeControl from "../TimeControl/TimeControl";
+import VolumeControl from "../VolumeControl/VolumeControl";
+import { minsToMilli } from "../../utils";
 
 class Clock extends React.Component {
   constructor(props) {
