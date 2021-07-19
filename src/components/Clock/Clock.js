@@ -1,7 +1,7 @@
 import React from "react";
 
-import Controls from "../Controls/Controls";
-import TimerDisplay from "../TimerDisplay";
+import Controls from "../Controls/Controls"
+import TimerDisplay from "../TimerDisplay/TimerDisplay";
 import TimeControl from "../TimeControl/TimeControl";
 import VolumeControl from "../VolumeControl/VolumeControl";
 import { minsToMilli } from "../../utils";

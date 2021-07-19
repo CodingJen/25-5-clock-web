@@ -1,4 +1,4 @@
-import { convertMillis } from "../utils";
+import { convertMillis } from "../../utils";
 
 const TimerDisplay = (props) => {
     return (

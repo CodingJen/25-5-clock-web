@@ -4,9 +4,9 @@ import { GlobalStyle } from './GlobalStyle';
 
 import './assets/clock.css';
 
-import Clock from './components/Clock';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import Clock from './components/Clock/Clock';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 
 function App() {
     return (
