@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { GlobalStyle } from './GlobalStyle';
+
 import './assets/clock.css';
 
 import Clock from './components/Clock';
@@ -12,6 +14,7 @@ function App() {
         <Header />
         <Clock />
         <Footer />
+        <GlobalStyle />
       </React.Fragment>
     );
 }

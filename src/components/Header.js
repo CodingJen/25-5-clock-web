@@ -1,8 +1,13 @@
+import styled from "styled-components";
+
 const Header = (props) => {
+
+  const Heading = styled.h1`
+    font-size: 5rem;
+  `
     return (
-      <header><h1>25 + 5 Clock</h1></header>
+      <header><Heading>25 + 5 Clock</Heading></header>
     )
   }
-
   
   export default Header;
