@@ -1,13 +1,11 @@
-import styled from "styled-components";
+import { H1Tag } from "./Header.styled";
 
 const Header = (props) => {
+  return (
+    <header>
+      <H1Tag>25 + 5 Clock</H1Tag>
+    </header>
+  );
+};
 
-  const Heading = styled.h1`
-    font-size: 5rem;
-  `
-    return (
-      <header><Heading>25 + 5 Clock</Heading></header>
-    )
-  }
-  
-  export default Header;
+export default Header;

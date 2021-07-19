@@ -68,5 +68,25 @@ body {
   gap: 1rem;
 }
 
+#break-label {
+  grid-area: break-label;
+  -ms-grid-column-align: end;
+      justify-self: end;
+}
+#break-setting {grid-area: break-setting;}
+#break-up {grid-area: break-up;}
+#break-down {grid-area: break-down;}
+#session-label {
+  grid-area: session-label;
+  -ms-grid-column-align: end;
+      justify-self: end;
+}
+#session-setting {grid-area: session-setting;}
+#session-up {grid-area: session-up;}
+#session-down {grid-area: session-down;}
+.volume-control { grid-area: volume;}
 
-`
+
+
+
+`;

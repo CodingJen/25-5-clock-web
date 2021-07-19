@@ -1,10 +1,13 @@
 import React from "react";
 
-import Controls from "../Controls/Controls"
+import Controls from "../Controls/Controls";
 import TimerDisplay from "../TimerDisplay/TimerDisplay";
 import TimeControl from "../TimeControl/TimeControl";
 import VolumeControl from "../VolumeControl/VolumeControl";
 import { minsToMilli } from "../../utils";
+
+//Styles
+import { Wrapper, Body, ControlSection, ControlGrid } from "./Clock.styled";
 
 class Clock extends React.Component {
   constructor(props) {
@@ -19,6 +22,7 @@ class Clock extends React.Component {
       break: false,
       volume: 1,
     };
+
     this.setSession = this.setSession.bind(this);
     this.setBreak = this.setBreak.bind(this);
     this.handleTick = this.handleTick.bind(this);
@@ -32,36 +36,36 @@ class Clock extends React.Component {
   }
 
   componentDidMount() {
-      this.localStore = JSON.parse(localStorage.getItem('clockData')) || {};
-      const sessionLength = parseInt(this.localStore.sessionLength) || 25;
-      const breakLength = parseInt(this.localStore.breakLength) || 5;
-      const timeRemaining = minsToMilli(sessionLength);
-      const volume = parseFloat(this.localStore.volume) || 1;
+    this.localStore = JSON.parse(localStorage.getItem("clockData")) || {};
+    const sessionLength = parseInt(this.localStore.sessionLength) || 25;
+    const breakLength = parseInt(this.localStore.breakLength) || 5;
+    const timeRemaining = minsToMilli(sessionLength);
+    const volume = parseFloat(this.localStore.volume) || 1;
 
     this.setState({
       sessionLength,
       breakLength,
       timeRemaining,
       volume,
-    })
+    });
   }
 
   updateLocalStorage(tag, value) {
     this.localStore[tag] = value;
-    localStorage.setItem('clockData', JSON.stringify(this.localStore));
+    localStorage.setItem("clockData", JSON.stringify(this.localStore));
   }
 
   setSession(e) {
     if (!this.state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
     let newLength = this.state.sessionLength + changeAmount;
-    
+
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
-    
-    this.setState({sessionLength: newLength});
 
-    this.updateLocalStorage('sessionLength', newLength);
+    this.setState({ sessionLength: newLength });
+
+    this.updateLocalStorage("sessionLength", newLength);
 
     if (!this.state.break)
       this.setState({ timeRemaining: minsToMilli(newLength) });
@@ -71,12 +75,12 @@ class Clock extends React.Component {
     if (!this.state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
     let newLength = this.state.breakLength + changeAmount;
-    
+
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
 
     this.setState({ breakLength: newLength });
-    this.updateLocalStorage('breakLength', newLength);
+    this.updateLocalStorage("breakLength", newLength);
 
     if (this.state.break)
       this.setState({ timeRemaining: minsToMilli(newLength) });
@@ -126,8 +130,8 @@ class Clock extends React.Component {
     const soundClip = document.getElementById("beep");
     const volume = parseFloat(e.target.value);
     soundClip.volume = volume;
-    this.setState({volume})
-    this.updateLocalStorage('volume', volume);
+    this.setState({ volume });
+    this.updateLocalStorage("volume", volume);
   }
 
   handleReset() {
@@ -143,8 +147,8 @@ class Clock extends React.Component {
       timeRemaining: 25 * 60 * 1000,
       intervalTimer: null,
     }));
-    this.updateLocalStorage('breakLength', 5)
-    this.updateLocalStorage('sessionLength', 25)
+    this.updateLocalStorage("breakLength", 5);
+    this.updateLocalStorage("sessionLength", 25);
   }
 
   handleStartStop() {
@@ -165,15 +169,15 @@ class Clock extends React.Component {
 
   render() {
     return (
-      <main>
-        <div className="stopwatch-body">
+      <Wrapper>
+        <Body className="stopwatch-body">
           <TimerDisplay
             timerTitle={this.state.break ? "Break" : "Session"}
             timeRemaining={this.state.timeRemaining}
           />
 
-          <div className="bottom-half">
-            <div className="selectors">
+          <ControlSection className="bottom-half">
+            <ControlGrid className="selectors">
               <TimeControl
                 id="break-length"
                 name="Break"
@@ -195,22 +199,23 @@ class Clock extends React.Component {
               />
               <VolumeControl
                 onChange={this.handleVolume}
-                value={this.state.volume} />
-            </div>
+                value={this.state.volume}
+              />
+            </ControlGrid>
 
             <Controls
               paused={this.state.paused}
               startStopHandler={this.handleStartStop}
               resetHandler={this.handleReset}
             />
-          </div>
-        </div>
+          </ControlSection>
+        </Body>
 
         <audio
           id="beep"
           src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
         />
-      </main>
+      </Wrapper>
     );
   }
 }

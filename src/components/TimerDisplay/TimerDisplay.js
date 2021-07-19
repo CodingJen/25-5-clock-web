@@ -1,12 +1,14 @@
 import { convertMillis } from "../../utils";
 
-const TimerDisplay = (props) => {
-    return (
-      <div className="session-box">
-        <div id="timer-label">{props.timerTitle}</div>
-        <div id="time-left">{convertMillis(props.timeRemaining)}</div>
-      </div>
-    )
-  }
+import { Wrapper, Label, Countdown } from "./TimerDisplay.styled";
 
-  export default TimerDisplay;
+const TimerDisplay = (props) => {
+  return (
+    <Wrapper className="session-box">
+      <Label id="timer-label">{props.timerTitle}</Label>
+      <Countdown id="time-left">{convertMillis(props.timeRemaining)}</Countdown>
+    </Wrapper>
+  );
+};
+
+export default TimerDisplay;

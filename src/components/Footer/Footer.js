@@ -1,5 +1,7 @@
+import { Foot, NameTag } from "./Footer.styled";
+
 const Footer = (props) => {
-    return <footer>made by <i>~Jennifer</i></footer>
+    return <Foot>made by <NameTag>~Jennifer</NameTag></Foot>
   }
 
   export default Footer;
