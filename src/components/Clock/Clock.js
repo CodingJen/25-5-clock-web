@@ -9,19 +9,131 @@ import { minsToMilli } from "../../utils";
 //Styles
 import { Wrapper, Body, ControlSection, ControlGrid } from "./Clock.styled";
 
+function useMergeState(initialState) {
+  const [state, setState] = useState(initialState);
+
+  const setMergedState = (newState) => {
+    console.log("setMergedState", newState);
+    setState((prevState) => Object.assign({}, prevState, newState));
+  };
+  return [state, setMergedState];
+}
+
+const localStore = {};
+
 const Clock = () => {
-  const [sessionLength, setSessionLength] = useState(25);
-  const [breakLength, setBreakLength] = useState(5);
-  const [isPaused, setIsPaused] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(minsToMilli(25));
-  const [runningInterval, setRunningInterval] = useState(null);
-  const [lastTime, setLastTime] = useState(null);
-  const [isBreak, setIsBreak] = useState(false);
-  const [alarmVolume, setAlarmVolume] = useState(1);
+  const [state, setState] = useMergeState({
+    sessionLength: 25, //min
+    breakLength: 5, //min
+    paused: true,
+    timeRemaining: 25 * 60 * 1000, // min * sec * milliseconds
+    runningInterval: null,
+    lastTime: null,
+    break: false,
+    volume: 1,
+  });
 
-  const localStore = {};
+  /*  Has to be a better way !!! */
+  function setSessionLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setBreakLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setPaused(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setTimeRemaining(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setSessionLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setSessionLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setSessionLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
+  function setSessionLength(newLength) {
+    setState((last) => ({
+      sessionLength: last.sessionLength,
+      breakLength: last.breakLength,
+      paused: last.paused,
+      timeRemaining: last.timeRemaining,
+      runningInterval: last.runningInterval,
+      lastTime: last.lastTime,
+      break: last.break,
+      volume: last.volume,
+    }));
+  }
 
-/*   constructor(props) {
+  console.log("clock rerender", state);
+
+  /*   constructor(props) {
     super(props);
     this.state = {
       sessionLength: 25, //min
@@ -48,15 +160,31 @@ const Clock = () => {
 */
 
   useEffect(() => {
-    const {sessionLength, breakLength, volume} = JSON.parse(localStorage.getItem("clockData")) || {};
+    console.log("running effect");
+    const getAndSet = () => {
+      const tempStore = JSON.parse(localStorage.getItem("clockData")) || {};
 
-    setSessionLength(parseInt(sessionLength) || 25);
-    setBreakLength(parseInt(breakLength) || 5);
-    setTimeRemaining(minsToMilli(sessionLength));
-    setAlarmVolume(parseFloat(volume) || 1);
-  });
+      const sessionLength = parseInt(tempStore.sessionLength) || 25;
+      const breakLength = parseInt(tempStore.breakLength) || 5;
+      const timeRemaining = minsToMilli(sessionLength);
+      const volume = parseFloat(tempStore.volume) || 1;
 
-/*   componentDidMount() {
+      setState({
+        sessionLength, //min
+        breakLength, //min
+        paused: true,
+        timeRemaining, // min * sec * milliseconds
+        runningInterval: null,
+        lastTime: null,
+        break: false,
+        volume,
+      });
+    };
+
+    getAndSet();
+  }, []);
+
+  /*   componentDidMount() {
     this.localStore = JSON.parse(localStorage.getItem("clockData")) || {};
     const sessionLength = parseInt(this.localStore.sessionLength) || 25;
     const breakLength = parseInt(this.localStore.breakLength) || 5;
@@ -71,96 +199,91 @@ const Clock = () => {
     });
   } */
 
-  updateLocalStorage(tag, value) {
+  function updateLocalStorage(tag, value) {
+    console.log("local store in updateLocalStorage()", localStore);
     localStore[tag] = value;
     localStorage.setItem("clockData", JSON.stringify(localStore));
   }
 
-  setSession(e) {
-    if (!this.state.paused) return; // don't do anything if we're not paused
+  function setSession(e) {
+    if (!state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
-    let newLength = this.state.sessionLength + changeAmount;
+    let newLength = state.sessionLength + changeAmount;
 
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
 
-    this.setState({ sessionLength: newLength });
+    setState({ sessionLength: newLength });
 
-    this.updateLocalStorage("sessionLength", newLength);
+    updateLocalStorage("sessionLength", newLength);
 
-    if (!this.state.break)
-      this.setState({ timeRemaining: minsToMilli(newLength) });
+    if (!state.break) setState({ timeRemaining: minsToMilli(newLength) });
   }
 
-  setBreak(e) {
-    if (!this.state.paused) return; // don't do anything if we're not paused
+  function setBreak(e) {
+    if (!state.paused) return; // don't do anything if we're not paused
     const changeAmount = parseInt(e.target.dataset.val);
-    let newLength = this.state.breakLength + changeAmount;
+    let newLength = state.breakLength + changeAmount;
 
     if (newLength < 1) newLength = 1;
     if (newLength > 60) newLength = 60;
 
-    this.setState({ breakLength: newLength });
-    this.updateLocalStorage("breakLength", newLength);
+    setState({ breakLength: newLength });
+    updateLocalStorage("breakLength", newLength);
 
-    if (this.state.break)
-      this.setState({ timeRemaining: minsToMilli(newLength) });
+    if (state.break) setState({ timeRemaining: minsToMilli(newLength) });
   }
 
-  handleTick() {
-    // going to assume if we're here and it says paused this is the first loop; so set a starting time
-    if (this.state.paused) {
-      this.setState(() => ({
-        lastTime: Date.now(),
-        paused: false,
-      }));
-    } else {
-      const now = Date.now();
-      const remain =
-        this.state.timeRemaining - (Date.now() - this.state.lastTime);
-      if (remain < 1000) this.playSound(true);
-      // test if the timer needs to be swapped
-      if (remain < 0) {
-        this.setState((state) => {
-          return {
-            lastTime: now,
-            timeRemaining: state.break
-              ? minsToMilli(state.sessionLength)
-              : minsToMilli(state.breakLength),
-            break: !state.break,
-          };
-        });
-        this.playSound();
-      } else {
-        this.setState((state) => ({
-          timeRemaining: remain,
+  function handleTick() {
+    console.log("start of handleTick() timeRemaining", state.timeRemaining);
+    const now = Date.now();
+    const remain = state.timeRemaining - (Date.now() - state.lastTime);
+
+    console.log("remain", remain);
+
+    if (remain < 1000) playSound(true);
+    // test if the timer needs to be swapped
+    if (remain < 0) {
+      setState((lastState) => {
+        return {
           lastTime: now,
-        }));
-      }
+          timeRemaining: lastState.break
+            ? minsToMilli(lastState.sessionLength)
+            : minsToMilli(lastState.breakLength),
+          break: !lastState.break,
+        };
+      });
+      playSound();
+    } else {
+      setState((lastState) => ({
+        timeRemaining: remain,
+        lastTime: now,
+      }));
     }
+    console.log("end of handleTick() state.timeRemaining", state.timeRemaining);
   }
 
-  playSound(testIfAlreadyPlaying = false) {
+  function playSound(testIfAlreadyPlaying = false) {
     const soundClip = document.getElementById("beep");
     if (testIfAlreadyPlaying && !soundClip.paused) return;
     soundClip.currentTime = 0;
     soundClip.play();
   }
 
-  handleVolume(e) {
+  function handleVolume(e) {
     const soundClip = document.getElementById("beep");
     const volume = parseFloat(e.target.value);
     soundClip.volume = volume;
-    this.setState({ volume });
-    this.updateLocalStorage("volume", volume);
+    setState({ volume });
+    updateLocalStorage("volume", volume);
   }
 
-  handleReset() {
-    if (!this.state.paused) clearTimeout(this.state.runningInterval);
+  function handleReset() {
+    if (!state.paused) clearTimeout(state.runningInterval);
     const soundClip = document.getElementById("beep");
     soundClip.pause();
     soundClip.currentTime = 0;
-    this.setState((state) => ({
+    setState((lastState) => ({
       break: false,
       paused: true,
       sessionLength: 25,
@@ -168,77 +291,71 @@ const Clock = () => {
       timeRemaining: 25 * 60 * 1000,
       intervalTimer: null,
     }));
-    this.updateLocalStorage("breakLength", 5);
-    this.updateLocalStorage("sessionLength", 25);
+    updateLocalStorage("breakLength", 5);
+    updateLocalStorage("sessionLength", 25);
   }
 
-  handleStartStop() {
-    if (this.state.paused) {
-      this.setState({
-        runningInterval: setInterval(this.handleTick, 100),
+  function handleStartStop() {
+    if (state.paused) {
+      setState({
+        runningInterval: setInterval(handleTick, 100),
         paused: false,
         lastTime: Date.now(),
       });
     } else {
-      clearTimeout(this.state.runningInterval);
-      this.setState({
+      clearTimeout(state.runningInterval);
+      setState({
         runningInterval: null,
         paused: true,
       });
     }
   }
-
-  render() {
-    return (
-      <Wrapper>
-        <Body className="stopwatch-body">
-          <TimerDisplay
-            timerTitle={this.state.break ? "Break" : "Session"}
-            timeRemaining={this.state.timeRemaining}
-          />
-
-          <ControlSection className="bottom-half">
-            <ControlGrid className="selectors">
-              <TimeControl
-                id="break-length"
-                name="Break"
-                labelId="break-label"
-                length={this.state.breakLength}
-                upId="break-increment"
-                downId="break-decrement"
-                onClick={this.setBreak}
-              />
-
-              <TimeControl
-                id="session-length"
-                name="Session"
-                labelId="session-label"
-                length={this.state.sessionLength}
-                upId="session-increment"
-                downId="session-decrement"
-                onClick={this.setSession}
-              />
-              <VolumeControl
-                onChange={this.handleVolume}
-                value={this.state.volume}
-              />
-            </ControlGrid>
-
-            <Controls
-              paused={this.state.paused}
-              startStopHandler={this.handleStartStop}
-              resetHandler={this.handleReset}
-            />
-          </ControlSection>
-        </Body>
-
-        <audio
-          id="beep"
-          src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+  return (
+    <Wrapper>
+      <Body className="stopwatch-body">
+        <TimerDisplay
+          timerTitle={state.break ? "Break" : "Session"}
+          timeRemaining={state.timeRemaining}
         />
-      </Wrapper>
-    );
-  }
-}
+
+        <ControlSection className="bottom-half">
+          <ControlGrid className="selectors">
+            <TimeControl
+              id="break-length"
+              name="Break"
+              labelId="break-label"
+              length={state.breakLength}
+              upId="break-increment"
+              downId="break-decrement"
+              onClick={setBreak}
+            />
+
+            <TimeControl
+              id="session-length"
+              name="Session"
+              labelId="session-label"
+              length={state.sessionLength}
+              upId="session-increment"
+              downId="session-decrement"
+              onClick={setSession}
+            />
+            <VolumeControl onChange={handleVolume} value={state.volume} />
+          </ControlGrid>
+
+          <Controls
+            paused={state.paused}
+            startStopHandler={handleStartStop}
+            resetHandler={handleReset}
+          />
+        </ControlSection>
+      </Body>
+
+      <audio
+        id="beep"
+        src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+      />
+    </Wrapper>
+  );
+};
 
 export default Clock;
