@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import Controls from "../Controls/Controls";
 import TimerDisplay from "../TimerDisplay/TimerDisplay";
@@ -9,8 +9,19 @@ import { minsToMilli } from "../../utils";
 //Styles
 import { Wrapper, Body, ControlSection, ControlGrid } from "./Clock.styled";
 
-class Clock extends React.Component {
-  constructor(props) {
+const Clock = () => {
+  const [sessionLength, setSessionLength] = useState(25);
+  const [breakLength, setBreakLength] = useState(5);
+  const [isPaused, setIsPaused] = useState(true);
+  const [timeRemaining, setTimeRemaining] = useState(minsToMilli(25));
+  const [runningInterval, setRunningInterval] = useState(null);
+  const [lastTime, setLastTime] = useState(null);
+  const [isBreak, setIsBreak] = useState(false);
+  const [alarmVolume, setAlarmVolume] = useState(1);
+
+  const localStore = {};
+
+/*   constructor(props) {
     super(props);
     this.state = {
       sessionLength: 25, //min
@@ -32,10 +43,20 @@ class Clock extends React.Component {
     this.handleVolume = this.handleVolume.bind(this);
     this.updateLocalStorage = this.updateLocalStorage.bind(this);
 
-    this.localStore = {};
-  }
+    this.localStore = {}; 
+  } 
+*/
 
-  componentDidMount() {
+  useEffect(() => {
+    const {sessionLength, breakLength, volume} = JSON.parse(localStorage.getItem("clockData")) || {};
+
+    setSessionLength(parseInt(sessionLength) || 25);
+    setBreakLength(parseInt(breakLength) || 5);
+    setTimeRemaining(minsToMilli(sessionLength));
+    setAlarmVolume(parseFloat(volume) || 1);
+  });
+
+/*   componentDidMount() {
     this.localStore = JSON.parse(localStorage.getItem("clockData")) || {};
     const sessionLength = parseInt(this.localStore.sessionLength) || 25;
     const breakLength = parseInt(this.localStore.breakLength) || 5;
@@ -48,11 +69,11 @@ class Clock extends React.Component {
       timeRemaining,
       volume,
     });
-  }
+  } */
 
   updateLocalStorage(tag, value) {
-    this.localStore[tag] = value;
-    localStorage.setItem("clockData", JSON.stringify(this.localStore));
+    localStore[tag] = value;
+    localStorage.setItem("clockData", JSON.stringify(localStore));
   }
 
   setSession(e) {
