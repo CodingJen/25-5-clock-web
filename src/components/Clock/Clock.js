@@ -70,29 +70,25 @@ const Clock = () => {
   }
 
   function handleTick() {
-    if (isPaused) {
-      setIsPaused(false);
-      setLastTime(Date.now());
+    const now = Date.now();
+
+    const remain = timeRemaining - (Date.now() - lastTime);
+
+    console.log('timeRemaining:', timeRemaining, 'lastTime', lastTime);
+
+    console.log('now', now, 'newRemaining:', remain);
+
+    if (remain < 1000) playSound(true);
+    // test if the timer needs to be swapped
+    if (remain < 0) {
+      setTimeRemaining(
+        isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
+      );
+
+      playSound();
     } else {
-      const now = Date.now();
-      console.log('timeRemaining', timeRemaining);
-      console.log('lastTime', lastTime);
-      const remain = timeRemaining - (Date.now() - lastTime);
-
-      console.log('remain', remain);
-
-      if (remain < 1000) playSound(true);
+      setTimeRemaining(remain);
       setLastTime(now);
-      // test if the timer needs to be swapped
-      if (remain < 0) {
-        setTimeRemaining(
-          isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
-        );
-
-        playSound();
-      } else {
-        setTimeRemaining(remain);
-      }
     }
   }
 
@@ -112,6 +108,7 @@ const Clock = () => {
   }
 
   function handleReset() {
+    console.log('handleReset()');
     if (!isPaused) clearTimeout(intervalTimer);
     const soundClip = document.getElementById('beep');
     soundClip.pause();
@@ -130,13 +127,18 @@ const Clock = () => {
 
   function handleStartStop() {
     if (isPaused) {
-      setIntervalTimer(handleTick, 200);
+      console.log('start timer');
+      setIntervalTimer(setInterval(handleTick, 200));
+      setIsPaused(false);
+      setLastTime(Date.now());
     } else {
+      console.log('stop timer');
       clearTimeout(intervalTimer);
       setIsPaused(true);
       setIntervalTimer(null);
     }
   }
+
   return (
     <Wrapper>
       <Body className="stopwatch-body">
