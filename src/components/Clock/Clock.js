@@ -16,10 +16,17 @@ const Clock = () => {
   const [breakLength, setBreakLength] = useState(5);
   const [isPaused, setIsPaused] = useState(true);
   const [timeRemaining, setTimeRemaining] = useState(minsToMilli(25));
-  const [intervalTimer, setIntervalTimer] = useState(null);
   const [lastTime, setLastTime] = useState(Date.now());
   const [isBreak, setIsBreak] = useState(false);
   const [appVolume, setAppVolume] = useState(1);
+
+  useEffect(() => {
+    let timer;
+    if (!isPaused) {
+      timer = setInterval(handleTick, 200);
+    }
+    return () => clearTimeout(timer);
+  }, [isPaused]);
 
   useEffect(() => {
     if (timeRemaining < 1000) playSound(true);
@@ -73,25 +80,25 @@ const Clock = () => {
   }
 
   function handleTick() {
-    const now = Date.now();
-    const deltaTime = now - lastTime;
-    const newTimeRemain = timeRemaining - deltaTime;
-
-    console.log("timeRemaining:", timeRemaining, "lastTime", lastTime);
-    console.log("now", now, "newRemaining:", newTimeRemain);
-    console.log(isPaused);
-
-    // test if the timer needs to be swapped
-    if (newTimeRemain < 0) {
-      setTimeRemaining(
-        isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
-      );
-      setIsBreak((last) => !last);
-      setLastTime(now);
+    if (isPaused) {
+      setLastTime(Date.now());
+      setIsPaused(false);
     } else {
-      console.log("setting");
-      setTimeRemaining(newTimeRemain);
-      setLastTime(now);
+      const now = Date.now();
+      const deltaTime = now - lastTime;
+      const newTimeRemain = timeRemaining - deltaTime;
+
+      // test if the timer needs to be swapped
+      if (newTimeRemain < 0) {
+        setTimeRemaining(
+          isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
+        );
+        setIsBreak((last) => !last);
+        setLastTime(now);
+      } else {
+        setTimeRemaining(newTimeRemain);
+        setLastTime(now);
+      }
     }
   }
 
@@ -112,7 +119,6 @@ const Clock = () => {
 
   function handleReset() {
     console.log("handleReset()");
-    if (!isPaused) clearTimeout(intervalTimer);
     const soundClip = document.getElementById("beep");
     soundClip.pause();
     soundClip.currentTime = 0;
@@ -122,7 +128,6 @@ const Clock = () => {
     setSessionLength(25);
     setBreakLength(5);
     setTimeRemaining(minsToMilli(25));
-    setIntervalTimer(null);
 
     updateLocalStorage("breakLength", 5);
     updateLocalStorage("sessionLength", 25);
@@ -130,15 +135,10 @@ const Clock = () => {
 
   function handleStartStop() {
     if (isPaused) {
-      console.log("start timer");
-      setIntervalTimer(setInterval(handleTick, 200));
       setIsPaused(false);
       setLastTime(Date.now());
     } else {
-      console.log("stop timer");
-      clearTimeout(intervalTimer);
       setIsPaused(true);
-      setIntervalTimer(null);
     }
   }
 
