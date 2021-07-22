@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import Controls from '../Controls/Controls';
-import TimerDisplay from '../TimerDisplay/TimerDisplay';
-import TimeControl from '../TimeControl/TimeControl';
-import VolumeControl from '../VolumeControl/VolumeControl';
-import { minsToMilli } from '../../utils';
+import Controls from "../Controls/Controls";
+import TimerDisplay from "../TimerDisplay/TimerDisplay";
+import TimeControl from "../TimeControl/TimeControl";
+import VolumeControl from "../VolumeControl/VolumeControl";
+import { minsToMilli } from "../../utils";
 
 //Styles
-import { Wrapper, Body, ControlSection, ControlGrid } from './Clock.styled';
+import { Wrapper, Body, ControlSection, ControlGrid } from "./Clock.styled";
 
 const localStore = {};
 
@@ -22,8 +22,12 @@ const Clock = () => {
   const [appVolume, setAppVolume] = useState(1);
 
   useEffect(() => {
+    if (timeRemaining < 1000) playSound(true);
+  }, [timeRemaining]);
+
+  useEffect(() => {
     const getAndSet = () => {
-      const tempStore = JSON.parse(localStorage.getItem('clockData')) || {};
+      const tempStore = JSON.parse(localStorage.getItem("clockData")) || {};
 
       const sessLength = parseInt(tempStore.sessionLength) || 25;
       setSessionLength(sessLength);
@@ -37,7 +41,7 @@ const Clock = () => {
 
   function updateLocalStorage(tag, value) {
     localStore[tag] = value;
-    localStorage.setItem('clockData', JSON.stringify(localStore));
+    localStorage.setItem("clockData", JSON.stringify(localStore));
   }
 
   function setSession(e) {
@@ -49,8 +53,7 @@ const Clock = () => {
     if (newLength > 60) newLength = 60;
 
     setSessionLength(newLength);
-
-    updateLocalStorage('sessionLength', newLength);
+    updateLocalStorage("sessionLength", newLength);
 
     if (!isBreak) setTimeRemaining(minsToMilli(newLength));
   }
@@ -64,53 +67,53 @@ const Clock = () => {
     if (newLength > 60) newLength = 60;
 
     setBreakLength(newLength);
-    updateLocalStorage('breakLength', newLength);
+    updateLocalStorage("breakLength", newLength);
 
     if (isBreak) setTimeRemaining(minsToMilli(newLength));
   }
 
   function handleTick() {
     const now = Date.now();
+    const deltaTime = now - lastTime;
+    const newTimeRemain = timeRemaining - deltaTime;
 
-    const remain = timeRemaining - (Date.now() - lastTime);
+    console.log("timeRemaining:", timeRemaining, "lastTime", lastTime);
+    console.log("now", now, "newRemaining:", newTimeRemain);
+    console.log(isPaused);
 
-    console.log('timeRemaining:', timeRemaining, 'lastTime', lastTime);
-
-    console.log('now', now, 'newRemaining:', remain);
-
-    if (remain < 1000) playSound(true);
     // test if the timer needs to be swapped
-    if (remain < 0) {
+    if (newTimeRemain < 0) {
       setTimeRemaining(
         isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
       );
-
-      playSound();
+      setIsBreak((last) => !last);
+      setLastTime(now);
     } else {
-      setTimeRemaining(remain);
+      console.log("setting");
+      setTimeRemaining(newTimeRemain);
       setLastTime(now);
     }
   }
 
   function playSound(testIfAlreadyPlaying = false) {
-    const soundClip = document.getElementById('beep');
+    const soundClip = document.getElementById("beep");
     if (testIfAlreadyPlaying && !soundClip.paused) return;
     soundClip.currentTime = 0;
     soundClip.play();
   }
 
   function handleVolume(e) {
-    const soundClip = document.getElementById('beep');
+    const soundClip = document.getElementById("beep");
     const volume = parseFloat(e.target.value);
     soundClip.volume = volume;
     setAppVolume(volume);
-    updateLocalStorage('volume', volume);
+    updateLocalStorage("volume", volume);
   }
 
   function handleReset() {
-    console.log('handleReset()');
+    console.log("handleReset()");
     if (!isPaused) clearTimeout(intervalTimer);
-    const soundClip = document.getElementById('beep');
+    const soundClip = document.getElementById("beep");
     soundClip.pause();
     soundClip.currentTime = 0;
 
@@ -121,18 +124,18 @@ const Clock = () => {
     setTimeRemaining(minsToMilli(25));
     setIntervalTimer(null);
 
-    updateLocalStorage('breakLength', 5);
-    updateLocalStorage('sessionLength', 25);
+    updateLocalStorage("breakLength", 5);
+    updateLocalStorage("sessionLength", 25);
   }
 
   function handleStartStop() {
     if (isPaused) {
-      console.log('start timer');
+      console.log("start timer");
       setIntervalTimer(setInterval(handleTick, 200));
       setIsPaused(false);
       setLastTime(Date.now());
     } else {
-      console.log('stop timer');
+      console.log("stop timer");
       clearTimeout(intervalTimer);
       setIsPaused(true);
       setIntervalTimer(null);
@@ -143,7 +146,7 @@ const Clock = () => {
     <Wrapper>
       <Body className="stopwatch-body">
         <TimerDisplay
-          timerTitle={isBreak ? 'Break' : 'Session'}
+          timerTitle={isBreak ? "Break" : "Session"}
           timeRemaining={timeRemaining}
         />
 
