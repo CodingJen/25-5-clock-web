@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 import Controls from "../Controls/Controls";
 import TimerDisplay from "../TimerDisplay/TimerDisplay";
@@ -20,13 +20,36 @@ const Clock = () => {
   const [isBreak, setIsBreak] = useState(false);
   const [appVolume, setAppVolume] = useState(1);
 
+  const handleTick = useCallback(() => {
+    if (isPaused) {
+      setLastTime(Date.now());
+      setIsPaused(false);
+    } else {
+      const now = Date.now();
+      const deltaTime = now - lastTime;
+      const newTimeRemain = timeRemaining - deltaTime;
+
+      // test if the timer needs to be swapped
+      if (newTimeRemain < 0) {
+        setTimeRemaining(
+          isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
+        );
+        setIsBreak((last) => !last);
+        setLastTime(now);
+      } else {
+        setTimeRemaining(newTimeRemain);
+        setLastTime(now);
+      }
+    }
+  }, [breakLength, sessionLength, isPaused, lastTime, timeRemaining, isBreak]);
+
   useEffect(() => {
     let timer;
     if (!isPaused) {
       timer = setInterval(handleTick, 200);
     }
     return () => clearTimeout(timer);
-  }, [isPaused]);
+  }, [isPaused, handleTick]);
 
   useEffect(() => {
     if (timeRemaining < 1000) playSound(true);
@@ -79,29 +102,6 @@ const Clock = () => {
     if (isBreak) setTimeRemaining(minsToMilli(newLength));
   }
 
-  function handleTick() {
-    if (isPaused) {
-      setLastTime(Date.now());
-      setIsPaused(false);
-    } else {
-      const now = Date.now();
-      const deltaTime = now - lastTime;
-      const newTimeRemain = timeRemaining - deltaTime;
-
-      // test if the timer needs to be swapped
-      if (newTimeRemain < 0) {
-        setTimeRemaining(
-          isBreak ? minsToMilli(sessionLength) : minsToMilli(breakLength)
-        );
-        setIsBreak((last) => !last);
-        setLastTime(now);
-      } else {
-        setTimeRemaining(newTimeRemain);
-        setLastTime(now);
-      }
-    }
-  }
-
   function playSound(testIfAlreadyPlaying = false) {
     const soundClip = document.getElementById("beep");
     if (testIfAlreadyPlaying && !soundClip.paused) return;
@@ -118,7 +118,6 @@ const Clock = () => {
   }
 
   function handleReset() {
-    console.log("handleReset()");
     const soundClip = document.getElementById("beep");
     soundClip.pause();
     soundClip.currentTime = 0;
